@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gealla's Digital Galaxy</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+<style>
+:root {
+--bg-deep: #030014;
+--bg-mid: #0a0520;
+--accent-cyan: #00f5ff;
+--accent-magenta: #ff00aa;
+--accent-gold: #ffd700;
+--accent-green: #00ff88;
+--text-primary: #ffffff;
+--text-muted: rgba(255,255,255,0.6);
+--glass-bg: rgba(255,255,255,0.03);
+--glass-border: rgba(255,255,255,0.1);
+--glow-cyan: 0 0 30px rgba(0,245,255,0.5);
+--glow-magenta: 0 0 30px rgba(255,0,170,0.5);
+}
+
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+html {
+scroll-behavior: smooth;
+}
+
+body {
+font-family: 'Space Grotesk', sans-serif;
+background: var(--bg-deep);
+color: var(--text-primary);
+overflow-x: hidden;
+line-height: 1.7;
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar {
+width: 8px;
+}
+::-webkit-scrollbar-track {
+background: var(--bg-deep);
+}
+::-webkit-scrollbar-thumb {
+background: linear-gradient(var(--accent-cyan), var(--accent-magenta));
+border-radius: 4px;
+}
+
+/* UTILITIES */
+.hidden { display: none !important; }
+
+/* WELCOME SCREEN */
+#welcome-screen {
+position: fixed;
+inset: 0;
+z-index: 1000;
+display: flex;
+align-items: center;
+justify-content: center;
+background: var(--bg-deep);
+overflow: hidden;
+}
+
+.welcome-bg-canvas {
+position: absolute;
+inset: 0;
+}
+
+.welcome-content {
+position: relative;
+z-index: 10;
+text-align: center;
+padding: 2rem;
+max-width: 900px;
+}
+
+.welcome-content h1 {
+font-family: 'Orbitron', sans-serif;
+font-size: clamp(2rem, 8vw, 5rem);
+font-weight: 900;
+letter-spacing: 0.1em;
+background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta), var(--accent-gold));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+margin-bottom: 1.5rem;
+position: relative;
+}
+
+.typing-container {
+min-height: 1.5em;
+margin-bottom: 1rem;
+}
+
+.typing-text {
+font-size: clamp(1rem, 2.5vw, 1.4rem);
+color: var(--text-muted);
+border-right: 2px solid var(--accent-cyan);
+animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+50% { border-color: transparent; }
+}
+
+#enter-btn {
+font-family: 'Orbitron', sans-serif;
+font-size: 1.1rem;
+font-weight: 700;
+padding: 1rem 3rem;
+background: transparent;
+border: 2px solid var(--accent-cyan);
+color: var(--accent-cyan);
+cursor: pointer;
+position: relative;
+overflow: hidden;
+transition: all 0.4s ease;
+text-transform: uppercase;
+letter-spacing: 0.15em;
+}
+
+#enter-btn::before {
+content: '';
+position: absolute;
+inset: 0;
+background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+opacity: 0;
+transition: opacity 0.4s;
+z-index: -1;
+}
+
+#enter-btn:hover {
+color: var(--bg-deep);
+border-color: transparent;
+transform: scale(1.05);
+box-shadow: var(--glow-cyan);
+}
+
+#enter-btn:hover::before {
+opacity: 1;
+}
+
+/* MAIN APP */
+#app-container {
+min-height: 100vh;
+position: relative;
+}
+
+#particle-canvas {
+position: fixed;
+inset: 0;
+z-index: 0;
+pointer-events: none;
+}
+
+/* FLOATING ORBS */
+.floating-orb {
+position: fixed;
+border-radius: 50%;
+pointer-events: none;
+z-index: 1;
+filter: blur(60px);
+opacity: 0.4;
+animation: float 20s ease-in-out infinite;
+}
+
+.orb-1 {
+width: 400px;
+height: 400px;
+background: radial-gradient(circle, var(--accent-cyan), transparent);
+top: 10%;
+left: 10%;
+animation-delay: 0s;
+}
+
+.orb-2 {
+width: 300px;
+height: 300px;
+background: radial-gradient(circle, var(--accent-magenta), transparent);
+top: 60%;
+right: 10%;
+animation-delay: -5s;
+}
+
+.orb-3 {
+width: 250px;
+height: 250px;
+background: radial-gradient(circle, var(--accent-gold), transparent);
+bottom: 20%;
+left: 30%;
+animation-delay: -10s;
+}
+
+@keyframes float {
+0%, 100% { transform: translate(0, 0) scale(1); }
+25% { transform: translate(50px, -30px) scale(1.1); }
+50% { transform: translate(-30px, 50px) scale(0.9); }
+75% { transform: translate(-50px, -20px) scale(1.05); }
+}
+
+/* NAVIGATION */
+.main-nav {
+position: fixed;
+top: 0;
+left: 0;
+right: 0;
+z-index: 100;
+display: flex;
+align-items: center;
+justify-content: space-between;
+padding: 1rem 2rem;
+background: rgba(3,0,20,0.8);
+backdrop-filter: blur(20px);
+border-bottom: 1px solid var(--glass-border);
+}
+
+.logo {
+font-family: 'Orbitron', sans-serif;
+font-size: 1.5rem;
+font-weight: 900;
+background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+
+.nav-links {
+display: flex;
+gap: 0.5rem;
+}
+
+.nav-links button {
+font-family: 'Space Grotesk', sans-serif;
+font-size: 0.9rem;
+font-weight: 500;
+padding: 0.6rem 1.2rem;
+background: transparent;
+border: 1px solid transparent;
+color: var(--text-muted);
+cursor: pointer;
+transition: all 0.3s;
+border-radius: 4px;
+}
+
+.nav-links button:hover,
+.nav-links button.active {
+color: var(--accent-cyan);
+border-color: var(--accent-cyan);
+background: rgba(0,245,255,0.1);
+}
+
+.settings-btn {
+width: 44px;
+height: 44px;
+background: var(--glass-bg);
+border: 1px solid var(--glass-border);
+border-radius: 50%;
+color: var(--text-primary);
+font-size: 1.2rem;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.settings-btn:hover {
+background: rgba(0,245,255,0.2);
+border-color: var(--accent-cyan);
+transform: rotate(90deg);
+}
+
+/* CUSTOMIZATION PANEL */
+#custom-panel {
+position: fixed;
+top: 80px;
+right: -320px;
+width: 300px;
+background: rgba(10,5,32,0.95);
+backdrop-filter: blur(20px);
+border: 1px solid var(--glass-border);
+border-radius: 12px;
+padding: 1.5rem;
+z-index: 99;
+transition: right 0.4s ease;
+}
+
+#custom-panel.open {
+right: 1rem;
+}
+
+#custom-panel h3 {
+font-family: 'Orbitron', sans-serif;
+font-size: 1rem;
+margin-bottom: 1.5rem;
+color: var(--accent-cyan);
+}
+
+.control-group {
+margin-bottom: 1.2rem;
+}
+
+.control-group label {
+display: block;
+font-size: 0.85rem;
+color: var(--text-muted);
+margin-bottom: 0.5rem;
+}
+
+.control-group select,
+.control-group input[type="color"] {
+width: 100%;
+padding: 0.6rem;
+background: var(--bg-deep);
+border: 1px solid var(--glass-border);
+border-radius: 6px;
+color: var(--text-primary);
+font-family: inherit;
+}
+
+.control-group input[type="range"] {
+width: 100%;
+accent-color: var(--accent-cyan);
+}
+
+/* SECTIONS */
+#sections-wrapper {
+position: relative;
+z-index: 10;
+padding: 100px 2rem 2rem;
+max-width: 1000px;
+margin: 0 auto;
+}
+
+.section {
+display: none;
+opacity: 0;
+transform: translateY(30px);
+transition: opacity 0.6s, transform 0.6s;
+}
+
+.section.active {
+display: block;
+opacity: 1;
+transform: translateY(0);
+}
+
+.card {
+background: var(--glass-bg);
+border: 1px solid var(--glass-border);
+border-radius: 20px;
+padding: 2.5rem;
+backdrop-filter: blur(10px);
+}
+
+.title-main {
+font-family: 'Orbitron', sans-serif;
+font-size: clamp(1.8rem, 5vw, 2.5rem);
+font-weight: 700;
+margin-bottom: 2rem;
+background: linear-gradient(135deg, var(--text-primary), var(--accent-cyan));
+-webkit-background-clip: text;
+-webkit-text-fill-color: transparent;
+background-clip: text;
+}
+
+.card-inner p {
+color: var(--text-muted);
+margin-bottom: 1.5rem;
+font-size: 1rem;
+}
+
+.btn-group {
+display: flex;
+gap: 1rem;
+margin-top: 2rem;
+flex-wrap: wrap;
+}
+
+.nav-btn {
+font-family: 'Space Grotesk', sans-serif;
+font-weight: 600;
+padding: 0.9rem 1.8rem;
+background: transparent;
+border: 2px solid var(--glass-border);
+color: var(--text-primary);
+cursor: pointer;
+border-radius: 8px;
+transition: all 0.3s;
+}
+
+.nav-btn:hover {
+border-color: var(--accent-cyan);
+color: var(--accent-cyan);
+background: rgba(0,245,255,0.1);
+}
+
+.nav-btn.primary {
+background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+border: none;
+color: var(--bg-deep);
+}
+
+.nav-btn.primary:hover {
+transform: translateY(-2px);
+box-shadow: var(--glow-cyan);
+}
+
+/* TIMELINE */
+.timeline-container {
+position: relative;
+padding-left: 30px;
+}
+
+.timeline-container::before {
+content: '';
+position: absolute;
+left: 0;
+top: 0;
+bottom: 0;
+width: 2px;
+background: linear-gradient(to bottom, var(--accent-cyan), var(--accent-magenta), var(--accent-gold));
+}
+
+.timeline-item {
+position: relative;
+margin-bottom: 2rem;
+padding-left: 2rem;
+}
+
+.timeline-dot {
+position: absolute;
+left: -35px;
+top: 5px;
+width: 14px;
+height: 14px;
+background: var(--accent-cyan);
+border-radius: 50%;
+box-shadow: var(--glow-cyan);
+}
+
+.timeline-item:nth-child(2) .timeline-dot {
+background: var(--accent-magenta);
+box-shadow: var(--glow-magenta);
+}
+
+.timeline-item:nth-child(3) .timeline-dot {
+background: var(--accent-gold);
+}
+
+.timeline-content h3 {
+font-family: 'Orbitron', sans-serif;
+font-size: 1.1rem;
+color: var(--accent-cyan);
+margin-bottom: 0.5rem;
+}
+
+/* PROJECT CARDS */
+.project-showcase {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+gap: 1.5rem;
+margin-top: 1.5rem;
+}
+
+.project-box {
+background: rgba(0,245,255,0.05);
+border: 1px solid rgba(0,245,255,0.2);
+border-radius: 12px;
+padding: 1.5rem;
+transition: all 0.3s;
+}
+
+.project-box:hover {
+transform: translateY(-5px);
+border-color: var(--accent-cyan);
+box-shadow: var(--glow-cyan);
+}
+
+.project-box h3 {
+font-family: 'Orbitron', sans-serif;
+font-size: 1rem;
+color: var(--accent-cyan);
+margin-bottom: 0.8rem;
+}
+
+.project-box p {
+font-size: 0.9rem !important;
+margin-bottom: 0 !important;
+}
+
+/* GAMES SECTION */
+#memory-game-area {
+background: rgba(0,0,0,0.3);
+border-radius: 16px;
+padding: 2rem;
+text-align: center;
+}
+
+#memory-game-area h3 {
+font-family: 'Orbitron', sans-serif;
+color: var(--accent-magenta);
+margin-bottom: 1rem;
+}
+
+.game-stats {
+font-size: 0.9rem;
+color: var(--accent-gold);
+margin-bottom: 1rem;
+}
+
+#game-grid {
+display: grid;
+grid-template-columns: repeat(4, 1fr);
+gap: 10px;
+max-width: 400px;
+margin: 0 auto 1.5rem;
+}
+
+.memory-card {
+aspect-ratio: 1;
+background: linear-gradient(135deg, rgba(0,245,255,0.2), rgba(255,0,170,0.2));
+border: 2px solid var(--glass-border);
+border-radius: 10px;
+display: flex;
+align-items: center;
+justify-content: center;
+font-size: 1.5rem;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.memory-card:hover {
+border-color: var(--accent-cyan);
+transform: scale(1.05);
+}
+
+.memory-card.flipped {
+background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+border-color: transparent;
+}
+
+.memory-card.matched {
+background: linear-gradient(135deg, var(--accent-green), var(--accent-gold));
+border-color: transparent;
+pointer-events: none;
+}
+
+/* CONTACT */
+.contact-info-box {
+background: rgba(0,245,255,0.05);
+border-radius: 12px;
+padding: 1.5rem;
+margin-top: 1rem;
+}
+
+.info-item {
+margin-bottom: 1rem;
+}
+
+.info-item strong {
+color: var(--accent-cyan);
+}
+
+.info-item a {
+color: var(--accent-magenta);
+text-decoration: none;
+transition: color 0.3s;
+}
+
+.info-item a:hover {
+color: var(--accent-gold);
+}
+
+/* MUSIC PLAYER */
+#music-player {
+position: fixed;
+bottom: 0;
+left: 0;
+right: 0;
+z-index: 100;
+background: rgba(3,0,20,0.95);
+backdrop-filter: blur(20px);
+border-top: 1px solid var(--glass-border);
+padding: 0.8rem 2rem;
+}
+
+.player-bar {
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 1rem;
+max-width: 600px;
+margin: 0 auto;
+}
+
+.player-bar button {
+width: 36px;
+height: 36px;
+background: transparent;
+border: 1px solid var(--glass-border);
+border-radius: 50%;
+color: var(--text-primary);
+font-size: 0.9rem;
+cursor: pointer;
+transition: all 0.3s;
+}
+
+.player-bar button:hover {
+border-color: var(--accent-cyan);
+color: var(--accent-cyan);
+}
+
+#play-btn {
+width: 44px;
+height: 44px;
+background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+border: none;
+color: var(--bg-deep);
+font-size: 1rem;
+}
+
+#play-btn:hover {
+transform: scale(1.1);
+}
+
+.song-title {
+font-size: 0.85rem;
+color: var(--text-muted);
+min-width: 100px;
+}
+
+#visualizer {
+border-radius: 4px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+.main-nav {
+padding: 1rem;
+}
+
+.nav-links {
+display: none;
+position: absolute;
+top: 100%;
+left: 0;
+right: 0;
+flex-direction: column;
+background: rgba(3,0,20,0.98);
+padding: 1rem;
+border-bottom: 1px solid var(--glass-border);
+}
+
+.nav-links.open {
+display: flex;
+}
+
+.hamburger {
+display: flex;
+flex-direction: column;
+gap: 4px;
+background: none;
+border: none;
+cursor: pointer;
+padding: 5px;
+}
+
+.hamburger span {
+width: 24px;
+height: 2px;
+background: var(--text-primary);
+transition: all 0.3s;
+}
+
+#sections-wrapper {
+padding: 80px 1rem 100px;
+}
+
+.card {
+padding: 1.5rem;
+}
+
+.floating-orb {
+opacity: 0.2;
+}
+}
+
+@media (min-width: 769px) {
+.hamburger {
+display: none;
+}
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+*, *::before, *::after {
+animation-duration: 0.01ms !important;
+transition-duration: 0.01ms !important;
+}
+}
+</style>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- WELCOME SCREEN -->
+<div id="welcome-screen">
+<canvas class="welcome-bg-canvas" id="welcome-canvas"></canvas>
+<div class="welcome-content">
+<h1>GEALLA'S DIGITAL GALAXY</h1>
+<div class="typing-container">
+<span class="typing-text" id="typing-text"></span>
+</div>
+<button id="enter-btn" onclick="enterSite()">Enter The Galaxy</button>
+</div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-container" class="hidden">
+
+<canvas id="particle-canvas"></canvas>
+
+<!-- FLOATING ORBS -->
+<div class="floating-orb orb-1"></div>
+<div class="floating-orb orb-2"></div>
+<div class="floating-orb orb-3"></div>
+
+<!-- NAVIGATION -->
+<nav class="main-nav">
+<div class="logo">G.D.G</div>
+<button class="hamburger" onclick="toggleMobileNav()">
+<span></span>
+<span></span>
+<span></span>
+</button>
+<div class="nav-links" id="nav-links">
+<button onclick="navigateTo('home')" class="active">Home</button>
+<button onclick="navigateTo('about')">About</button>
+<button onclick="navigateTo('journey')">Journey</button>
+<button onclick="navigateTo('projects')">Projects</button>
+<button onclick="navigateTo('games')">Games</button>
+<button onclick="navigateTo('contact')">Contact</button>
+</div>
+<button class="settings-btn" onclick="togglePanel()">&#9881;</button>
+</nav>
+
+<!-- CUSTOMIZATION PANEL -->
+<div id="custom-panel">
+<h3>Customize View</h3>
+<div class="control-group">
+<label>Font Family</label>
+<select id="font-select" onchange="updateFont(this.value)">
+<option value="'Space Grotesk', sans-serif">Space Grotesk</option>
+<option value="Arial, sans-serif">Arial</option>
+<option value="'Courier New', monospace">Monospace</option>
+<option value="Georgia, serif">Georgia</option>
+</select>
+</div>
+<div class="control-group">
+<label>Accent Theme</label>
+<select onchange="updateTheme(this.value)">
+<option value="cyan">Cyan Neon</option>
+<option value="green">Matrix Green</option>
+<option value="gold">Golden Sun</option>
+</select>
+</div>
+<div class="control-group">
+<label>Text Size: <span id="size-val">16</span>px</label>
+<input type="range" min="12" max="24" value="16" onchange="updateTextSize(this.value)">
+</div>
+<div class="control-group">
+<label><input type="checkbox" onchange="toggleHighContrast(this.checked)"> High Contrast</label>
+</div>
+</div>
+
+<!-- SECTIONS -->
+<div id="sections-wrapper">
+
+<!-- HOME -->
+<section id="home" class="section active">
+<div class="card">
+<h1 class="title-main">Welcome to My Universe</h1>
+<div class="card-inner">
+<p>I am a student deeply passionate about exploring the profound ways technology can shape our collective future. Through my immersive journey in STEM, I discovered the unique blend of creativity and logic that powers coding, and it quickly transformed from a simple hobby into one of my absolute favorite skills.</p>
+<p>Writing code feels like constructing a digital architecture step by step, and I genuinely enjoy experimenting with different languages and modern tools to see how abstract ideas come to life on the screen. This portfolio website showcases my projects and highlights how coding is actively helping me grow as a resilient problem-solver and an innovative creator.</p>
+</div>
+<div class="btn-group">
+<button class="nav-btn primary" onclick="navigateTo('about')">Discover Who I Am</button>
+<button class="nav-btn" onclick="navigateTo('projects')">See My Work</button>
+</div>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" class="section">
+<div class="card">
+<h1 class="title-main">About Gealla</h1>
+<div class="card-inner">
+<p>Hi there! My name is Gealla, and I am a passionate student currently navigating the amazing and ever-evolving world of web development! I absolutely love coding and building cool, interactive projects that bring ideas to life on the screen. I am on an exciting journey to become a skilled web developer, and every single day I am learning something new.</p>
+<p>I believe that web development is not just about writing lines of code - it is about creating beautiful, functional experiences that make people smile when they visit a website. My goal is to master the tools of the trade, from HTML and CSS to JavaScript and beyond, so I can build websites that are not only useful but also delightful to use.</p>
+</div>
+<div class="btn-group">
+<button class="nav-btn" onclick="navigateTo('home')">Back to Home</button>
+<button class="nav-btn primary" onclick="navigateTo('journey')">My Journey</button>
+</div>
+</div>
+</section>
+
+<!-- JOURNEY -->
+<section id="journey" class="section">
+<div class="card">
+<h1 class="title-main">My Journey & Timeline</h1>
+<div class="card-inner timeline-container">
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+<div class="timeline-content">
+<h3>Term 1: The Beginning</h3>
+<p>My very first project was "Map Your Campus" in Term 1. Using Google My Maps, I learned how to digitally map out different areas of my school campus. That project helped me realize that I had significantly more potential in myself than I had previously expected.</p>
+</div>
+</div>
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+<div class="timeline-content">
+<h3>Term 2: Discovering Code</h3>
+<p>In Term 2, I joined "Launch Your Website," and that is when I truly discovered the art of web development. I learnt how to combine JavaScript, CSS, and HTML to make a fully functioning portfolio website from scratch.</p>
+</div>
+</div>
+<div class="timeline-item">
+<div class="timeline-dot"></div>
+<div class="timeline-content">
+<h3>Current: Building the Future</h3>
+<p>From struggling with Google My Maps to confidently building a portfolio website, STEM has been a turning point in my life. It has taught me resilience, creativity, and problem-solving, setting a strong foundation for my future career in technology.</p>
+</div>
+</div>
+</div>
+<div class="btn-group">
+<button class="nav-btn" onclick="navigateTo('home')">Back to Home</button>
+</div>
+</div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="section">
+<div class="card">
+<h1 class="title-main">My Creations</h1>
+<div class="card-inner">
+<p>Each project represents milestones of growth, learning, and resilience. Every one taught me valuable lessons that I carry forward.</p>
+<div class="project-showcase">
+<div class="project-box">
+<h3>Map Your Campus</h3>
+<p>Term 1 Project. My first step into digital creation using Google My Maps to chart my school campus. Taught me patience and attention to detail.</p>
+</div>
+<div class="project-box">
+<h3>Launch Your Website</h3>
+<p>Term 2 Project. Combined HTML, CSS, and JavaScript to build a functioning portfolio site. The bridge between simple tools and professional development.</p>
+</div>
+<div class="project-box">
+<h3>Digital Galaxy Portfolio</h3>
+<p>Current Project. The culmination of my STEM journey, demonstrating creativity, resilience, and ability to bring ideas to life on the web.</p>
+</div>
+</div>
+</div>
+<div class="btn-group">
+<button class="nav-btn" onclick="navigateTo('home')">Back to Home</button>
+<button class="nav-btn primary" onclick="navigateTo('contact')">Contact Me</button>
+</div>
+</div>
+</section>
+
+<!-- GAMES -->
+<section id="games" class="section">
+<div class="card">
+<h1 class="title-main">Interactive Zone</h1>
+<div class="card-inner">
+<p>Take a break and play! This section proves that coding can be fun and interactive. Try the Memory Game below!</p>
+<div id="memory-game-area">
+<h3>Memory Match</h3>
+<div class="game-stats">Moves: <span id="moves">0</span></div>
+<div id="game-grid"></div>
+<button class="nav-btn primary" onclick="initGame()">New Game</button>
+</div>
+</div>
+<div class="btn-group">
+<button class="nav-btn" onclick="navigateTo('home')">Back to Home</button>
+</div>
+</div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="section">
+<div class="card">
+<h1 class="title-main">Contact Me</h1>
+<div class="card-inner">
+<p>I would absolutely love to hear from you! Whether you have questions about my projects, feedback on my website, or just want to chat about web development, feel free to reach out!</p>
+<div class="contact-info-box">
+<div class="info-item">
+<strong>Email:</strong> <a href="mailto:benihirwemigishagaella@gmail.com">benihirwemigishagaella@gmail.com</a>
+</div>
+<div class="info-item">
+<strong>Phone:</strong> 0733651726 / 0790549390
+</div>
+</div>
+</div>
+<div class="btn-group">
+<button class="nav-btn" onclick="navigateTo('home')">Back to Home</button>
+</div>
+</div>
+</section>
+
+</div>
+
+<!-- MUSIC PLAYER -->
+<div id="music-player">
+<div class="player-bar">
+<button onclick="prevTrack()">&#x23EE;</button>
+<button id="play-btn" onclick="toggleMusic()">&#x25B6;</button>
+<button onclick="nextTrack()">&#x23ED;</button>
+<span class="song-title">Ambient Space</span>
+<canvas id="visualizer" width="100" height="30"></canvas>
+</div>
+</div>
+
+</div>
+
+<script>
+// === CONFIGURATION ===
+const PARTICLE_COUNT = 150;
+const STAR_COLORS = ['#00f5ff', '#ff00aa', '#ffd700', '#00ff88', '#ff6b6b'];
+
+// === STATE VARIABLES ===
+let particles = [];
+let isPlaying = false;
+let currentSection = 'home';
+let gameCards = [];
+let flippedCards = [];
+let moves = 0;
+let canFlip = true;
+let audioCtx = null;
+let analyser = null;
+let dataArray = null;
+
+// === WELCOME SCREEN ANIMATIONS ===
+const typingPhrases = [
+"Prepare for an interactive journey through STEM, Creativity, and Code.",
+"Explore the universe of digital possibilities.",
+"Where imagination meets technology."
+];
+let phraseIndex = 0;
+let charIndex = 0;
+let isDeleting = false;
+
+function typeText() {
+const element = document.getElementById('typing-text');
+if (!element) return;
+
+const currentPhrase = typingPhrases[phraseIndex];
+
+if (isDeleting) {
+element.textContent = currentPhrase.substring(0, charIndex - 1);
+charIndex--;
+} else {
+element.textContent = currentPhrase.substring(0, charIndex + 1);
+charIndex++;
+}
+
+let delay = isDeleting ? 30 : 60;
+
+if (!isDeleting && charIndex === currentPhrase.length) {
+delay = 2000;
+isDeleting = true;
+} else if (isDeleting && charIndex === 0) {
+isDeleting = false;
+phraseIndex = (phraseIndex + 1) % typingPhrases.length;
+delay = 500;
+}
+
+setTimeout(typeText, delay);
+}
+
+// === WELCOME CANVAS (STARS) ===
+function initWelcomeCanvas() {
+const canvas = document.getElementById('welcome-canvas');
+if (!canvas) return;
+const ctx = canvas.getContext('2d');
+
+function resize() {
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+const stars = [];
+for (let i = 0; i < 300; i++) {
+stars.push({
+x: Math.random() * canvas.width,
+y: Math.random() * canvas.height,
+radius: Math.random() * 2,
+speed: Math.random() * 0.5 + 0.1,
+color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)]
+});
+}
+
+function animate() {
+ctx.fillStyle = 'rgba(3, 0, 20, 0.1)';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+stars.forEach(star => {
+ctx.beginPath();
+ctx.arc(star.x, star.y, Math.max(0.5, star.radius), 0, Math.PI * 2);
+ctx.fillStyle = star.color;
+ctx.fill();
+
+star.y -= star.speed;
+if (star.y < 0) {
+star.y = canvas.height;
+star.x = Math.random() * canvas.width;
+}
+});
+
+requestAnimationFrame(animate);
+}
+animate();
+}
+
+// === PARTICLE CANVAS ===
+function initParticleCanvas() {
+const canvas = document.getElementById('particle-canvas');
+if (!canvas) return;
+const ctx = canvas.getContext('2d');
+
+function resize() {
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+particles = [];
+for (let i = 0; i < PARTICLE_COUNT; i++) {
+particles.push({
+x: Math.random() * canvas.width,
+y: Math.random() * canvas.height,
+vx: (Math.random() - 0.5) * 0.5,
+vy: (Math.random() - 0.5) * 0.5,
+radius: Math.random() * 2 + 1,
+color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)]
+});
+}
+
+function animate() {
+ctx.fillStyle = 'rgba(3, 0, 20, 0.05)';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+particles.forEach((p, i) => {
+p.x += p.vx;
+p.y += p.vy;
+
+if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+if (p.y < 0 || p.y > canvas.height) p.vy *= -1;
+
+ctx.beginPath();
+ctx.arc(p.x, p.y, Math.max(0.5, p.radius), 0, Math.PI * 2);
+ctx.fillStyle = p.color;
+ctx.fill();
+
+// Connect nearby particles
+for (let j = i + 1; j < particles.length; j++) {
+const p2 = particles[j];
+const dx = p.x - p2.x;
+const dy = p.y - p2.y;
+const dist = Math.sqrt(dx * dx + dy * dy);
+
+if (dist < 120) {
+ctx.beginPath();
+ctx.moveTo(p.x, p.y);
+ctx.lineTo(p2.x, p2.y);
+ctx.strokeStyle = `rgba(0, 245, 255, ${0.15 - dist / 800})`;
+ctx.lineWidth = 0.5;
+ctx.stroke();
+}
+}
+});
+
+requestAnimationFrame(animate);
+}
+animate();
+}
+
+// === SITE ENTRY ===
+function enterSite() {
+const welcome = document.getElementById('welcome-screen');
+const app = document.getElementById('app-container');
+
+welcome.style.opacity = '0';
+welcome.style.transition = 'opacity 0.8s';
+
+setTimeout(() => {
+welcome.style.display = 'none';
+app.classList.remove('hidden');
+initParticleCanvas();
+}, 800);
+}
+
+// === NAVIGATION ===
+function navigateTo(sectionId) {
+const sections = document.querySelectorAll('.section');
+const navBtns = document.querySelectorAll('.nav-links button');
+
+sections.forEach(s => s.classList.remove('active'));
+navBtns.forEach(b => b.classList.remove('active'));
+
+const target = document.getElementById(sectionId);
+if (target) {
+target.classList.add('active');
+}
+
+const activeBtn = document.querySelector(`.nav-links button[onclick="navigateTo('${sectionId}')"]`);
+if (activeBtn) {
+activeBtn.classList.add('active');
+}
+
+currentSection = sectionId;
+
+// Close mobile nav
+document.getElementById('nav-links').classList.remove('open');
+}
+
+function toggleMobileNav() {
+document.getElementById('nav-links').classList.toggle('open');
+}
+
+// === CUSTOMIZATION PANEL ===
+function togglePanel() {
+document.getElementById('custom-panel').classList.toggle('open');
+}
+
+function updateFont(font) {
+document.body.style.fontFamily = font;
+}
+
+function updateTextSize(size) {
+document.getElementById('size-val').textContent = size;
+document.body.style.fontSize = size + 'px';
+}
+
+function updateTheme(theme) {
+const root = document.documentElement;
+const themes = {
+cyan: { accent: '#00f5ff', glow: 'rgba(0,245,255,0.5)' },
+green: { accent: '#00ff88', glow: 'rgba(0,255,136,0.5)' },
+gold: { accent: '#ffd700', glow: 'rgba(255,215,0,0.5)' }
+};
+if (themes[theme]) {
+root.style.setProperty('--accent-cyan', themes[theme].accent);
+root.style.setProperty('--glow-cyan', `0 0 30px ${themes[theme].glow}`);
+}
+}
+
+function toggleHighContrast(enabled) {
+if (enabled) {
+document.body.style.filter = 'contrast(1.3)';
+} else {
+document.body.style.filter = '';
+}
+}
+
+// === MEMORY GAME ===
+const gameSymbols = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+
+function initGame() {
+const grid = document.getElementById('game-grid');
+if (!grid) return;
+
+grid.innerHTML = '';
+gameCards = [...gameSymbols, ...gameSymbols].sort(() => Math.random() - 0.5);
+flippedCards = [];
+moves = 0;
+canFlip = true;
+document.getElementById('moves').textContent = moves;
+
+gameCards.forEach((symbol, index) => {
+const card = document.createElement('div');
+card.className = 'memory-card';
+card.dataset.symbol = symbol;
+card.dataset.index = index;
+card.onclick = () => flipCard(card);
+grid.appendChild(card);
+});
+}
+
+function flipCard(card) {
+if (!canFlip || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+
+card.classList.add('flipped');
+card.textContent = card.dataset.symbol;
+flippedCards.push(card);
+
+if (flippedCards.length === 2) {
+moves++;
+document.getElementById('moves').textContent = moves;
+canFlip = false;
+
+const [c1, c2] = flippedCards;
+if (c1.dataset.symbol === c2.dataset.symbol) {
+c1.classList.add('matched');
+c2.classList.add('matched');
+flippedCards = [];
+canFlip = true;
+} else {
+setTimeout(() => {
+c1.classList.remove('flipped');
+c2.classList.remove('flipped');
+c1.textContent = '';
+c2.textContent = '';
+flippedCards = [];
+canFlip = true;
+}, 800);
+}
+}
+}
+
+// === MUSIC PLAYER ===
+function toggleMusic() {
+const btn = document.getElementById('play-btn');
+isPlaying = !isPlaying;
+btn.innerHTML = isPlaying ? '&#x23F8;' : '&#x25B6;';
+
+if (isPlaying) {
+startVisualizer();
+}
+}
+
+function prevTrack() {
+// Placeholder for track navigation
+console.log('Previous track');
+}
+
+function nextTrack() {
+// Placeholder for track navigation
+console.log('Next track');
+}
+
+function startVisualizer() {
+const canvas = document.getElementById('visualizer');
+if (!canvas) return;
+const ctx = canvas.getContext('2d');
+
+function draw() {
+if (!isPlaying) return;
+
+ctx.fillStyle = 'rgba(3, 0, 20, 0.3)';
+ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+const barCount = 20;
+const barWidth = canvas.width / barCount;
+
+for (let i = 0; i < barCount; i++) {
+const height = Math.random() * canvas.height * 0.8;
+const gradient = ctx.createLinearGradient(0, canvas.height, 0, 0);
+gradient.addColorStop(0, '#00f5ff');
+gradient.addColorStop(1, '#ff00aa');
+
+ctx.fillStyle = gradient;
+ctx.fillRect(i * barWidth, canvas.height - height, barWidth - 2, height);
+}
+
+requestAnimationFrame(draw);
+}
+draw();
+}
+
+// === INITIALIZATION ===
+document.addEventListener('DOMContentLoaded', () => {
+initWelcomeCanvas();
+typeText();
+initGame();
+});
+  </script>
+<script src="script.js" ></script>
+</body>
+</html>
